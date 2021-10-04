@@ -13,6 +13,10 @@ namespace DotNetMvcAutoLot
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
+            routes.MapRoute("ContactPage", "Contact/{*pathInfo}", new { controller = "Home", action = "Contact" });
+
+            routes.MapRoute("AbouttPage", "About/{*pathInfo}", new { controller = "Home", action = "About" });
+
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
