@@ -5,6 +5,9 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using DotNetEFAutoLot.DAL.Models;
+using DotNetEFAutoLot.DAL.EF;
+using System.Data.Entity;
 
 namespace DotNetMvcAutoLot
 {
@@ -12,6 +15,9 @@ namespace DotNetMvcAutoLot
     {
         protected void Application_Start()
         {
+            // Recrate database
+            // Database.SetInitializer(new MyDataInitializer());
+
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
