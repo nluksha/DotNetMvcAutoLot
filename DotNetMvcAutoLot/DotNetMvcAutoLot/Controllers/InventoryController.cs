@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -61,7 +62,7 @@ namespace DotNetMvcAutoLot.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(String.Empty, $@"Unable to create record: {ex.Message}");
+                ModelState.AddModelError(String.Empty, $@"Unable to create record. {ex.Message}");
 
                 return View(inventory);
             }
@@ -76,7 +77,7 @@ namespace DotNetMvcAutoLot.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Inventory inventory = db.Inventory.Find(id);
+            Inventory inventory = repo.GetOne(id);
             if (inventory == null)
             {
                 return HttpNotFound();
@@ -89,7 +90,7 @@ namespace DotNetMvcAutoLot.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Make,Color,PetName")] Inventory inventory)
+        public ActionResult Edit([Bind(Include = "Id,Make,Color,PetName,Timestamp")] Inventory inventory)
         {
             if (!ModelState.IsValid)
             {
@@ -98,10 +99,17 @@ namespace DotNetMvcAutoLot.Controllers
 
             try
             {
-                repo.Add(inventory);
-            } catch (Exception ex)
+                repo.Save(inventory);
+            }
+            catch (DbUpdateConcurrencyException ex)
             {
-                ModelState.AddModelError(String.Empty, $@"Unable to create record: {ex.Message}");
+                ModelState.AddModelError(String.Empty, $@"Unable to save the record. Another user has updated it. {ex.Message}");
+
+                return View(inventory);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(String.Empty, $@"Unable to save record. {ex.Message}");
 
                 return View(inventory);
             }
@@ -116,7 +124,7 @@ namespace DotNetMvcAutoLot.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Inventory inventory = db.Inventory.Find(id);
+            Inventory inventory = repo.GetOne(id);
             if (inventory == null)
             {
                 return HttpNotFound();
@@ -125,13 +133,27 @@ namespace DotNetMvcAutoLot.Controllers
         }
 
         // POST: Inventory/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult Delete([Bind(Include = "Id,Timestamp")] Inventory inventory)
         {
-            Inventory inventory = db.Inventory.Find(id);
-            db.Inventory.Remove(inventory);
-            db.SaveChanges();
+            try
+            {
+                repo.Delete(inventory);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                ModelState.AddModelError(String.Empty, $@"Unable to delete the record. Another user has updated it. {ex.Message}");
+
+                return View(inventory);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(String.Empty, $@"Unable to delete record. {ex.Message}");
+
+                return View(inventory);
+            }
+
             return RedirectToAction("Index");
         }
 
