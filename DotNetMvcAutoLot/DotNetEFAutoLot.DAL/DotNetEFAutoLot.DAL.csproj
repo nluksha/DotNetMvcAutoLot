@@ -62,6 +62,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Base\EntityBase.cs" />
+    <Compile Include="Models\MetaData\InventoryMetaData.cs" />
     <Compile Include="PartialEntities\InventoryPartial.cs" />
     <Compile Include="EF\AutoLotEntities.cs" />
     <Compile Include="Models\CreditRisk.cs" />
